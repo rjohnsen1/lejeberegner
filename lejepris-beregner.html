@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lejeprisberegner — Snedsted / Stenbjerg</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2eb;
+    --surface: #ffffff;
+    --border: #ddd9d0;
+    --text: #1a1815;
+    --muted: #7a776e;
+    --accent: #2c5f3f;
+    --accent-light: #e8f0eb;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--sans);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+  }
+
+  header {
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  header p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .field {
+    margin-bottom: 1.75rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--text);
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    padding: 0.25rem 0;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  input[type="number"]::placeholder {
+    color: var(--border);
+  }
+
+  .stand-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stand-btn {
+    padding: 0.6rem 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .stand-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .stand-btn.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.75rem 0;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-box {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+  }
+
+  .result-box .rlabel {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .result-box .rvalue {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .result-box .rsub {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  .result-box.highlight {
+    background: var(--accent-light);
+    border: 1px solid #c2d9c9;
+  }
+
+  .result-box.highlight .rvalue {
+    color: var(--accent);
+  }
+
+  .per-person {
+    background: var(--accent);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .per-person .pp-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+  }
+
+  .per-person .pp-value {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  .per-person .pp-sub {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.6);
+    width: 100%;
+  }
+
+  .note-text {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  footer {
+    margin-top: 2rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Lejeprisberegner</h1>
+  <p>Estimeret leje for hus på landet mellem Snedsted og Stenbjerg, Thisted Kommune. Baseret på det lokale udlejningsmarked 2025.</p>
+</header>
+
+<div class="card">
+
+  <div class="field">
+    <label>Boligens størrelse</label>
+    <input type="number" id="m2input" min="40" max="400" value="100" placeholder="m²">
+  </div>
+
+  <div class="field">
+    <label>Husets stand</label>
+    <div class="stand-group">
+      <button class="stand-btn" id="btn0" onclick="setStand(0)">Ældre /<br>nedslidt</button>
+      <button class="stand-btn active" id="btn1" onclick="setStand(1)">Rimelig<br>stand</button>
+      <button class="stand-btn" id="btn2" onclick="setStand(2)">Renoveret /<br>nyere</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Antal lejere der deler huslejen</label>
+    <input type="number" id="lejere" min="1" max="10" value="1" placeholder="personer">
+  </div>
+
+  <hr class="divider">
+
+  <div class="results-grid">
+    <div class="result-box">
+      <div class="rlabel">Lav</div>
+      <div class="rvalue" id="low">5.000 kr</div>
+      <div class="rsub" id="low-sub">50 kr/m²</div>
+    </div>
+    <div class="result-box highlight">
+      <div class="rlabel">Typisk</div>
+      <div class="rvalue" id="mid">6.000 kr</div>
+      <div class="rsub" id="mid-sub">60 kr/m²</div>
+    </div>
+    <div class="result-box">
+      <div class="rlabel">Høj</div>
+      <div class="rvalue" id="high">7.000 kr</div>
+      <div class="rsub" id="high-sub">70 kr/m²</div>
+    </div>
+  </div>
+
+  <div class="per-person" id="perPersonBlock">
+    <div>
+      <div class="pp-label">Pr. lejer (typisk)</div>
+      <div class="pp-value" id="ppValue">6.000 kr/md.</div>
+    </div>
+    <div class="pp-sub" id="ppSub">1 lejer · 100 m² · rimelig stand</div>
+  </div>
+
+  <div class="note-text" id="noteText">
+    Ordinært helårshus i rimelig stand. Typisk for landsbyer og det åbne land i området.
+  </div>
+
+</div>
+
+<footer>snedsted–stenbjerg · thisted kommune · estimat 2025</footer>
+
+<script>
+var stands = [
+  { low: 40, mid: 50, high: 60, note: "Hus med synligt slid, ældre opvarmning. Laveste lejeniveau i området." },
+  { low: 50, mid: 60, high: 70, note: "Ordinært helårshus i rimelig stand. Typisk for landsbyer og det åbne land i området." },
+  { low: 70, mid: 80, high: 90, note: "Renoveret eller relativt nyt hus. Kan gå mod 90 kr/m² ved nær kystbeliggenhed mod Vesterhavet." }
+];
+var standLabels = ["ældre / nedslidt", "rimelig stand", "renoveret / nyere"];
+var currentStand = 1;
+
+function setStand(i) {
+  currentStand = i;
+  document.querySelectorAll('.stand-btn').forEach(function(b, j) {
+    b.classList.toggle('active', j === i);
+  });
+  calculate();
+}
+
+function fmt(n) {
+  return Math.round(n).toLocaleString('da-DK') + ' kr';
+}
+
+function calculate() {
+  var m2 = parseInt(document.getElementById('m2input').value) || 100;
+  var lejere = parseInt(document.getElementById('lejere').value) || 1;
+  if (lejere < 1) lejere = 1;
+  var s = stands[currentStand];
+
+  document.getElementById('low').textContent = fmt(m2 * s.low);
+  document.getElementById('mid').textContent = fmt(m2 * s.mid);
+  document.getElementById('high').textContent = fmt(m2 * s.high);
+  document.getElementById('low-sub').textContent = s.low + ' kr/m²/md.';
+  document.getElementById('mid-sub').textContent = s.mid + ' kr/m²/md.';
+  document.getElementById('high-sub').textContent = s.high + ' kr/m²/md.';
+
+  var ppMid = (m2 * s.mid) / lejere;
+  var lejereText = lejere === 1 ? '1 lejer' : lejere + ' lejere';
+  document.getElementById('ppValue').textContent = fmt(ppMid) + '/md.';
+  document.getElementById('ppSub').textContent = lejereText + ' · ' + m2 + ' m² · ' + standLabels[currentStand];
+  document.getElementById('noteText').textContent = s.note;
+}
+
+document.getElementById('m2input').addEventListener('input', calculate);
+document.getElementById('lejere').addEventListener('input', calculate);
+calculate();
+</script>
+</body>
+</html>
