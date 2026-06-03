@@ -92,6 +92,9 @@
     padding: 0.25rem 0;
     outline: none;
     transition: border-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    border-radius: 0;
   }
 
   input[type="number"]:focus {
@@ -103,16 +106,23 @@
   }
 
   .stand-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  @media (min-width: 400px) {
+    .stand-group {
+      flex-direction: row;
+    }
   }
 
   .stand-btn {
-    padding: 0.6rem 0.5rem;
+    flex: 1;
+    padding: 0.6rem 0.75rem;
     font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.03em;
+    font-size: 0.65rem;
+    letter-spacing: 0.02em;
     border: 1px solid var(--border);
     border-radius: 6px;
     background: transparent;
@@ -133,12 +143,6 @@
     border-color: var(--accent);
     color: var(--accent);
     font-weight: 500;
-  }
-
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.75rem 0;
   }
 
   .results-grid {
@@ -290,9 +294,9 @@
   <div class="field">
     <label>Husets stand</label>
     <div class="stand-group">
-      <button class="stand-btn" id="btn0" onclick="setStand(0)">Ældre /<br>nedslidt</button>
-      <button class="stand-btn active" id="btn1" onclick="setStand(1)">Rimelig<br>stand</button>
-      <button class="stand-btn" id="btn2" onclick="setStand(2)">Renoveret /<br>nyere</button>
+      <button class="stand-btn" id="btn0" onclick="setStand(0)">Ældre / nedslidt</button>
+      <button class="stand-btn active" id="btn1" onclick="setStand(1)">Rimelig stand</button>
+      <button class="stand-btn" id="btn2" onclick="setStand(2)">Renoveret / nyere</button>
     </div>
   </div>
 
@@ -301,9 +305,7 @@
     <input type="number" id="lejere" min="1" max="10" value="1" placeholder="personer">
   </div>
 
-  <hr class="divider">
-
-  <div class="results-grid">
+  <div class="results-grid" style="margin-top: 1.75rem;">
     <div class="result-box">
       <div class="rlabel">Lav</div>
       <div class="rvalue" id="low">5.000 kr</div>
